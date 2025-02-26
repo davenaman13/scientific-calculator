@@ -1,7 +1,4 @@
 - hosts: all
-  become: yes
-  vars:
-    ansible_become_password: "{{ sudo_password }}"
   tasks:
     - name: Ensure Docker is installed
       become: yes
@@ -26,3 +23,5 @@
         image: naman1301/scientific-calculator:latest
         state: started
         detach: yes
+        ports:
+          - "8081:8080"  # Map container port 8080 to host port 8080

@@ -36,7 +36,7 @@ pipeline {
             steps {
                 script {
                     docker.withRegistry('https://registry.hub.docker.com', 'docker-hub-credentials') {
-                        docker.image("${DOCKER_IMAGE}").push()
+                        sh 'docker -D push naman1301/scientific-calculator:latest'
                     }
                 }
             }
