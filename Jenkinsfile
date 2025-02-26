@@ -5,6 +5,7 @@ pipeline {
         // Docker Hub credentials (store these in Jenkins credentials)
         DOCKER_HUB_CREDENTIALS = credentials('docker-hub-credentials')
         DOCKER_IMAGE = "naman1301/scientific-calculator:latest"
+	SUDO_PASSWORD = credentials('sudo-password') 
     }
 
     stages {
@@ -50,6 +51,7 @@ pipeline {
                     inventory: 'ansible/inventory',
                     credentialsId: 'ansible-ssh-credentials', // Store SSH credentials in Jenkins
                     extraVars: [
+			ansible_become_password: "${SUDO_PASSWORD}",
                         ansible_verbosity: '-vvv'
                     ]
                 )

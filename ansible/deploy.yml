@@ -1,4 +1,7 @@
 - hosts: all
+  become: yes
+  vars:
+    ansible_become_password: "{{ sudo_password }}"
   tasks:
     - name: Ensure Docker is installed
       become: yes
