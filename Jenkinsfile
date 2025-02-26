@@ -2,28 +2,24 @@ pipeline {
     agent any
 
     environment {
-        // Docker Hub credentials (store these in Jenkins credentials)
         DOCKER_HUB_CREDENTIALS = credentials('docker-hub-credentials')
         DOCKER_IMAGE = "naman1301/scientific-calculator:latest"
-	SUDO_PASSWORD = credentials('sudo-password') 
+        SUDO_PASSWORD = credentials('sudo-password') // Store sudo password in Jenkins
     }
 
     stages {
-        // Stage 1: Pull code from GitHub
         stage('Checkout Code') {
             steps {
                 git branch: 'main', url: 'https://github.com/davenaman13/scientific-calculator.git'
             }
         }
 
-        // Stage 2: Run unit tests
         stage('Run Unit Tests') {
             steps {
                 sh 'python3 -m unittest test_calculator.py'
             }
         }
 
-        // Stage 3: Build Docker image
         stage('Build Docker Image') {
             steps {
                 script {
@@ -32,7 +28,6 @@ pipeline {
             }
         }
 
-        // Stage 4: Push Docker image to Docker Hub
         stage('Push Docker Image') {
             steps {
                 script {
@@ -43,15 +38,14 @@ pipeline {
             }
         }
 
-        // Stage 5: Deploy using Ansible
         stage('Deploy with Ansible') {
             steps {
                 ansiblePlaybook(
                     playbook: 'ansible/deploy.yml',
                     inventory: 'ansible/inventory',
-                    credentialsId: 'ansible-ssh-credentials', // Store SSH credentials in Jenkins
+                    credentialsId: 'ansible-ssh-credentials',
                     extraVars: [
-			ansible_become_password: "${SUDO_PASSWORD}",
+                        sudo_password: "${SUDO_PASSWORD}",
                         ansible_verbosity: '-vvv'
                     ]
                 )
@@ -60,7 +54,6 @@ pipeline {
     }
 
     post {
-        // Actions to perform after the pipeline completes
         success {
             echo 'Pipeline completed successfully!'
         }
