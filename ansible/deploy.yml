@@ -1,0 +1,28 @@
+- hosts: all
+  become: yes
+  vars:
+    ansible_become_password: "{{ sudo_password }}"
+  tasks:
+    - name: Ensure Docker is installed
+      become: yes
+      apt:
+        name: docker.io
+        state: present
+        update_cache: yes
+
+    - name: Pull Docker image
+      docker_image:
+        name: naman1301/scientific-calculator:latest
+        source: pull
+
+    - name: Stop and remove existing container (if any)
+      docker_container:
+        name: calculator
+        state: absent
+
+    - name: Run Docker container
+      docker_container:
+        name: calculator
+        image: naman1301/scientific-calculator:latest
+        state: started
+        detach: yes
