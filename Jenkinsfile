@@ -23,7 +23,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    docker.build("${DOCKER_IMAGE}")
+                   sh 'docker build -t naman1301/scientific-calculator:latest .'
                 }
             }
         }
