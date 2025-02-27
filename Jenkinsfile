@@ -4,6 +4,7 @@ pipeline {
     environment {
         DOCKER_HUB_CREDENTIALS = credentials('docker-hub-credentials')
         DOCKER_IMAGE = "naman1301/scientific-calculator:latest"
+        SUDO_PASSWORD = credentials('sudo-password') // Store sudo password in Jenkins
     }
 
     stages {
@@ -31,7 +32,7 @@ pipeline {
             steps {
                 script {
                     docker.withRegistry('https://registry.hub.docker.com', 'docker-hub-credentials') {
-                        sh 'docker -D push naman1301/scientific-calculator:latest'
+                        docker.image("${DOCKER_IMAGE}").push()
                     }
                 }
             }
@@ -42,7 +43,11 @@ pipeline {
                 ansiblePlaybook(
                     playbook: 'ansible/deploy.yml',
                     inventory: 'ansible/inventory',
-                    credentialsId: 'ansible-ssh-credentials'
+                    credentialsId: 'ansible-ssh-credentials',
+                    extraVars: [
+                        sudo_password: "${SUDO_PASSWORD}",
+                        ansible_verbosity: '-vvv'
+                    ]
                 )
             }
         }
