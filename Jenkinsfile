@@ -23,43 +23,62 @@ pipeline {
         }
 
         // Stage 3: Build Docker image
+pipeline {
+    agent any
+
+    environment {
+        DOCKER_HUB_CREDENTIALS = credentials('docker-hub-credentials')
+        DOCKER_IMAGE = "naman1301/scientific-calculator:latest"
+        SUDO_PASSWORD = credentials('sudo-password') // Store sudo password in Jenkins
+    }
+
+    stages {
+        stage('Checkout Code') {
+            steps {
+                git branch: 'main', url: 'https://github.com/davenaman13/scientific-calculator.git'
+            }
+        }
+
+        stage('Run Unit Tests') {
+            steps {
+                sh 'python3 -m unittest test_calculator.py'
+            }
+        }
+
         stage('Build Docker Image') {
             steps {
                 script {
-                    sh 'docker build -t naman1301/scientific-calculator .'
+                   sh 'docker build -t naman1301/scientific-calculator:latest .'
                 }
             }
         }
 
-        // Stage 4: Push Docker image to Docker Hub
         stage('Push Docker Image') {
             steps {
                 script {
                     docker.withRegistry('https://registry.hub.docker.com', 'docker-hub-credentials') {
-			docker.image("${DOCKER_IMAGE}").push()                     
+                        docker.image("${DOCKER_IMAGE}").push()
                     }
                 }
             }
         }
 
-//Resolved Ansible playbook execution failure in Jenkins pipeline
-// corrected the directory structure for stage:5
-
- 
-       // Stage 5: Deploy using Ansible
         stage('Deploy with Ansible') {
             steps {
                 ansiblePlaybook(
                     playbook: 'ansible/deploy.yml',
                     inventory: 'ansible/inventory',
-                    credentialsId: 'ansible-ssh-credentials' // Store SSH credentials in Jenkins
+                    credentialsId: 'ansible-ssh-credentials',
+                    extraVars: [
+                        sudo_password: "${SUDO_PASSWORD}",
+                        ansible_verbosity: '-vvv'
+                    ]
                 )
             }
         }
     }
 
     post {
-        // Actions to perform after the pipeline completes
         success {
             echo 'Pipeline completed successfully!'
         }
