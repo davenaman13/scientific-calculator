@@ -50,8 +50,8 @@ pipeline {
         stage('Deploy with Ansible') {
             steps {
                 ansiblePlaybook(
-                    playbook: 'deploy.yml',
-                    inventory: 'inventory',
+                    playbook: 'ansible/deploy.yml',
+                    inventory: 'ansible/inventory',
                     credentialsId: 'ansible-ssh-credentials' // Store SSH credentials in Jenkins
                 )
             }
