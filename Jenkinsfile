@@ -2,31 +2,6 @@ pipeline {
     agent any
 
     environment {
-        // Docker Hub credentials (store these in Jenkins credentials)
-        DOCKER_HUB_CREDENTIALS = credentials('docker-hub-credentials')
-        DOCKER_IMAGE = "naman1301/scientific-calculator:latest"
-    }
-
-    stages {
-        // Stage 1: Pull code from GitHub
-        stage('Checkout Code') {
-            steps {
-                git branch: 'main', url: 'https://github.com/davenaman13/scientific-calculator.git'
-            }
-        }
-
-        // Stage 2: Run unit tests
-        stage('Run Unit Tests') {
-            steps {
-                sh 'python3 -m unittest test_calculator.py'
-            }
-        }
-
-        // Stage 3: Build Docker image
-pipeline {
-    agent any
-
-    environment {
         DOCKER_HUB_CREDENTIALS = credentials('docker-hub-credentials')
         DOCKER_IMAGE = "naman1301/scientific-calculator:latest"
         SUDO_PASSWORD = credentials('sudo-password') // Store sudo password in Jenkins
