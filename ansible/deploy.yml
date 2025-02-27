@@ -1,29 +1,62 @@
 - hosts: all
   become: yes
-  vars:
-    ansible_become_password: "{{ sudo_password }}"
   tasks:
-    - name: Ensure Docker is installed
-      apt:
-        name: docker.io
-        state: present
-        update_cache: yes
+    - name: Check if Docker is installed
+      command: which docker
+      register: docker_installed
+      ignore_errors: yes
+
+    - name: Skip Docker installation if already installed
+      debug:
+        msg: "Docker is already installed, skipping installation"
+      when: docker_installed.rc == 0
+
+    - name: Install Docker if not installed
+      when: docker_installed.rc != 0
+      block:
+        - name: Update apt and install required packages
+          apt:
+            name:
+              - apt-transport-https
+              - ca-certificates
+              - curl
+              - gnupg
+              - lsb-release
+            state: present
+
+        - name: Add Docker's official GPG key
+          shell: |
+            curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+
+        - name: Set up Docker repository
+          shell: |
+            echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+        - name: Install Docker
+          apt:
+            name:
+              - docker-ce
+              - docker-ce-cli
+              - containerd.io
+            state: present
+            update_cache: yes
 
     - name: Pull Docker image
-      docker_image:
+      community.docker.docker_image:
         name: naman1301/scientific-calculator:latest
         source: pull
 
     - name: Stop and remove existing container (if any)
-      docker_container:
+      community.docker.docker_container:
         name: calculator
         state: absent
 
     - name: Run Docker container
-      docker_container:
+      community.docker.docker_container:
         name: calculator
         image: naman1301/scientific-calculator:latest
         state: started
+        restart_policy: always
         detach: yes
         ports:
-          - "8081:8080"  # Map container port 8080 to host port 8080
+          - "8081:8080"
