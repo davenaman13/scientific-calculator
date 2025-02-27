@@ -59,4 +59,4 @@
         restart_policy: always
         detach: yes
         ports:
-          - "8080:8080"
+          - "8082:8080"
