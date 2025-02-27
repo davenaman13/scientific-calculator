@@ -42,12 +42,7 @@ pipeline {
             steps {
                 ansiblePlaybook(
                     playbook: 'ansible/deploy.yml',
-                    inventory: 'ansible/inventory',
-                    credentialsId: 'ansible-ssh-credentials',
-                    extraVars: [
-                        ansible_become_pass: "${SUDO_PASSWORD}",
-                        ansible_verbosity: '-vvv'
-                    ]
+                    inventory: 'ansible/inventory'
                 )
             }
         }
