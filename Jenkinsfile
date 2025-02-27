@@ -45,7 +45,7 @@ pipeline {
                     inventory: 'ansible/inventory',
                     credentialsId: 'ansible-ssh-credentials',
                     extraVars: [
-                        sudo_password: "${SUDO_PASSWORD}",
+                        ansible_become_pass: "${SUDO_PASSWORD}",
                         ansible_verbosity: '-vvv'
                     ]
                 )
