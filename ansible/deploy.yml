@@ -1,14 +1,6 @@
 - hosts: all
-  become: yes
-  vars:
-    ansible_become_password: "1231"
+  become: yes  # Use sudo without a password
   tasks:
-    - name: Ensure Docker is installed
-      apt:
-        name: docker.io
-        state: present
-        update_cache: yes
-
     - name: Pull Docker image
       docker_image:
         name: naman1301/scientific-calculator:latest
@@ -26,4 +18,4 @@
         state: started
         detach: yes
         ports:
-          - "8081:8080"  # Map container port 8080 to host port 8080
+          - "8081:8080"
