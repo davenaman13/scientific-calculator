@@ -14,7 +14,7 @@ def power_function(x, b):
 
 def main():
     while True:
-        print("\nScientific Calculator Menu:")
+        print("\nScientific Calculator Menu::")
         print("1. Square Root (√x)")
         print("2. Factorial (x!)")
         print("3. Natural Logarithm (ln(x))")
