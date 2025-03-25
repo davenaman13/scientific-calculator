@@ -25,7 +25,7 @@ def main():
 
         if choice == '1':
             x = float(input("Enter a number to find its square root: "))
-            print(f"Square Root of {x} is: {square_root(x)}")
+            print(f"  Square Root of {x} is: {square_root(x)}")
         elif choice == '2':
             x = int(input("Enter a number to find its factorial: "))
             print(f"Factorial of {x} is: {factorial(x)}")
